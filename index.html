@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chi Tiêu Cá Nhân</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161921;
+    --surface2: #1e2230;
+    --border: #2a2f42;
+    --accent: #f0a500;
+    --accent2: #ff6b35;
+    --text: #e8eaf2;
+    --text-muted: #6b7394;
+    --green: #2dce89;
+    --red: #f5365c;
+    --cat1: #f0a500;
+    --cat2: #ff6b35;
+    --cat3: #8b5cf6;
+    --cat4: #2dce89;
+    --cat5: #06b6d4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.015) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.015) 40px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ─── SIDEBAR ─── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 32px 0;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .logo {
+    padding: 0 24px 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-mark {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-mark span {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.7; }
+  }
+
+  .logo-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  .nav {
+    padding: 24px 16px;
+    flex: 1;
+  }
+
+  .nav-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    padding: 0 8px;
+    margin-bottom: 8px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+    border: 1px solid transparent;
+  }
+
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+
+  .nav-item.active {
+    background: rgba(240, 165, 0, 0.1);
+    color: var(--accent);
+    border-color: rgba(240, 165, 0, 0.2);
+  }
+
+  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+
+  .month-picker {
+    padding: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .month-picker label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .month-picker input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    padding: 8px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+    cursor: pointer;
+  }
+
+  .month-picker input:focus { border-color: var(--accent); }
+  .month-picker input::-webkit-calendar-picker-indicator { filter: invert(0.7); cursor: pointer; }
+
+  /* ─── MAIN ─── */
+  .main {
+    padding: 40px;
+    max-width: 1100px;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 36px;
+  }
+
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+
+  .page-title em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .page-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #000;
+  }
+
+  .btn-primary:hover {
+    background: #ffb930;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(240,165,0,0.3);
+  }
+
+  .btn-ghost {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover { border-color: var(--text-muted); }
+
+  .btn-danger {
+    background: rgba(245,54,92,0.1);
+    color: var(--red);
+    border: 1px solid rgba(245,54,92,0.2);
+  }
+
+  .btn-danger:hover { background: rgba(245,54,92,0.2); }
+
+  /* ─── STATS GRID ─── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+
+  .stat-card:hover { transform: translateY(-2px); border-color: var(--text-muted); }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    filter: blur(30px);
+    opacity: 0.4;
+  }
+
+  .stat-card:nth-child(1)::before { background: var(--cat1); }
+  .stat-card:nth-child(2)::before { background: var(--cat2); }
+  .stat-card:nth-child(3)::before { background: var(--cat3); }
+  .stat-card:nth-child(4)::before { background: var(--cat4); }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .stat-amount {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-count {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* ─── CAT BARS ─── */
+  .cat-overview {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 32px;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .cat-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .cat-row:last-child { margin-bottom: 0; }
+
+  .cat-name {
+    width: 130px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .cat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .cat-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .cat-bar {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .cat-amount {
+    font-size: 12px;
+    color: var(--text-muted);
+    width: 110px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* ─── CONTENT GRID ─── */
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* ─── TRANSACTION LIST ─── */
+  .transactions {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .transactions-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .filter-tabs {
+    display: flex;
+    gap: 4px;
+  }
+
+  .filter-tab {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    color: var(--text-muted);
+    transition: all 0.15s;
+    background: none;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .filter-tab:hover { color: var(--text); }
+
+  .filter-tab.active {
+    background: var(--surface2);
+    border-color: var(--border);
+    color: var(--text);
+  }
+
+  .tx-list { max-height: 480px; overflow-y: auto; }
+
+  .tx-list::-webkit-scrollbar { width: 4px; }
+  .tx-list::-webkit-scrollbar-track { background: transparent; }
+  .tx-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .tx-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.15s;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .tx-item:hover { background: rgba(255,255,255,0.02); }
+  .tx-item:last-child { border-bottom: none; }
+
+  .tx-emoji {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .tx-info { flex: 1; min-width: 0; }
+
+  .tx-title {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tx-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .tx-amount {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--red);
+    flex-shrink: 0;
+  }
+
+  .tx-delete {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    font-size: 14px;
+    opacity: 0;
+    transition: all 0.15s;
+  }
+
+  .tx-item:hover .tx-delete { opacity: 1; }
+  .tx-delete:hover { color: var(--red); background: rgba(245,54,92,0.1); }
+
+  .empty-state {
+    padding: 60px 24px;
+    text-align: center;
+    color: var(--text-muted);
+  }
+
+  .empty-state .big { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 13px; }
+
+  /* ─── ADD FORM ─── */
+  .add-form {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    padding: 11px 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(240,165,0,0.1);
+  }
+
+  .form-select option { background: #1e2230; }
+
+  .form-textarea {
+    resize: none;
+    height: 72px;
+    line-height: 1.5;
+  }
+
+  .cat-chips {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .cat-chip {
+    padding: 9px 12px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s;
+    background: var(--surface2);
+    color: var(--text-muted);
+  }
+
+  .cat-chip:hover { color: var(--text); border-color: var(--text-muted); }
+  .cat-chip.selected { color: var(--text); }
+
+  .amount-input-wrap {
+    position: relative;
+  }
+
+  .amount-input-wrap .currency {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  .form-input.amount { padding-right: 40px; }
+
+  .quick-amounts {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .quick-amt {
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    font-size: 11px;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    transition: all 0.15s;
+  }
+
+  .quick-amt:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ─── MODAL ─── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    width: 420px;
+    transform: translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .modal-overlay.open .modal { transform: none; }
+
+  .modal-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 13px;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  .toast.show { transform: none; opacity: 1; }
+  .toast.success { border-color: rgba(45,206,137,0.4); }
+  .toast.error { border-color: rgba(245,54,92,0.4); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 20px; }
+    .stats-grid { grid-template-columns: repeat(2,1fr); }
+    .content-grid { grid-template-columns: 1fr; }
+  }
+
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+  }
+
+  .total-banner {
+    background: linear-gradient(135deg, rgba(240,165,0,0.15) 0%, rgba(255,107,53,0.08) 100%);
+    border: 1px solid rgba(240,165,0,0.25);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .total-banner .label {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .total-banner .amount {
+    font-family: 'Syne', sans-serif;
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+
+  .total-banner .amount span {
+    font-size: 18px;
+    letter-spacing: 0;
+    opacity: 0.7;
+    margin-left: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark"><span></span> Chi Tiêu</div>
+      <div class="logo-sub">// quản lý cá nhân</div>
+    </div>
+    <nav class="nav">
+      <div class="nav-label">Menu</div>
+      <div class="nav-item active" onclick="setPage('dashboard')">
+        <span class="icon">📊</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="setPage('history')">
+        <span class="icon">📋</span> Lịch sử
+      </div>
+      <div class="nav-item" onclick="openAddModal()">
+        <span class="icon">➕</span> Thêm chi tiêu
+      </div>
+      <div class="nav-item" onclick="clearData()" style="margin-top:auto; color: var(--text-muted)">
+        <span class="icon">🗑️</span> Xóa tất cả
+      </div>
+    </nav>
+    <div class="month-picker">
+      <label>Tháng xem</label>
+      <input type="month" id="monthPicker" onchange="render()">
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="mainContent">
+    <!-- rendered by JS -->
+  </main>
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-title">+ Thêm Chi Tiêu</div>
+
+    <div class="form-group">
+      <label class="form-label">Danh mục</label>
+      <div class="cat-chips" id="catChips"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Mô tả</label>
+      <input class="form-input" id="txNote" placeholder="VD: Bún bò bữa sáng..." />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Số tiền (₫)</label>
+      <div class="amount-input-wrap">
+        <input class="form-input amount" id="txAmount" type="number" placeholder="0" />
+        <span class="currency">₫</span>
+      </div>
+      <div class="quick-amounts">
+        <div class="quick-amt" onclick="setAmount(10000)">10K</div>
+        <div class="quick-amt" onclick="setAmount(20000)">20K</div>
+        <div class="quick-amt" onclick="setAmount(30000)">30K</div>
+        <div class="quick-amt" onclick="setAmount(50000)">50K</div>
+        <div class="quick-amt" onclick="setAmount(100000)">100K</div>
+        <div class="quick-amt" onclick="setAmount(200000)">200K</div>
+        <div class="quick-amt" onclick="setAmount(500000)">500K</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Ngày</label>
+      <input class="form-input" id="txDate" type="date" />
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="addTransaction()" style="flex:1">💾 Lưu</button>
+      <button class="btn btn-ghost" onclick="closeAddModal()">Huỷ</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const CATEGORIES = [
+  { id: 'meal',       label: 'Bữa ăn',       emoji: '🍜', color: 'var(--cat1)' },
+  { id: 'grocery',    label: 'Đồ ăn mua',     emoji: '🛒', color: 'var(--cat2)' },
+  { id: 'misc',       label: 'Linh tinh trọ', emoji: '🏠', color: 'var(--cat3)' },
+  { id: 'fun',        label: 'Đi chơi',       emoji: '🎉', color: 'var(--cat4)' },
+  { id: 'transport',  label: 'Di chuyển',     emoji: '🛵', color: 'var(--cat5)' },
+  { id: 'health',     label: 'Sức khoẻ',      emoji: '💊', color: '#f472b6' },
+];
+
+let selectedCat = 'meal';
+let currentPage = 'dashboard';
+
+function getStorage() {
+  try {
+    return JSON.parse(sessionStorage.getItem('chi_tieu') || localStorage.getItem('chi_tieu') || '[]');
+  } catch { return []; }
+}
+
+function setStorage(data) {
+  const s = JSON.stringify(data);
+  try { localStorage.setItem('chi_tieu', s); } catch {}
+  try { sessionStorage.setItem('chi_tieu', s); } catch {}
+}
+
+function getMonth() {
+  return document.getElementById('monthPicker').value;
+}
+
+function fmt(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1).replace(/\.0$/,'') + 'M₫';
+  if (n >= 1000) return Math.round(n/1000) + 'K₫';
+  return n + '₫';
+}
+
+function fmtFull(n) {
+  return new Intl.NumberFormat('vi-VN').format(n) + ' ₫';
+}
+
+function fmtDate(d) {
+  const dt = new Date(d);
+  return dt.toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit' });
+}
+
+function getCat(id) { return CATEGORIES.find(c => c.id === id) || CATEGORIES[0]; }
+
+function monthData() {
+  const all = getStorage();
+  const m = getMonth();
+  if (!m) return all;
+  return all.filter(t => t.date && t.date.startsWith(m));
+}
+
+// ─── RENDER ───
+function render() {
+  const container = document.getElementById('mainContent');
+  const data = monthData();
+  const total = data.reduce((s, t) => s + t.amount, 0);
+
+  const catTotals = {};
+  CATEGORIES.forEach(c => catTotals[c.id] = 0);
+  data.forEach(t => { if (catTotals[t.cat] !== undefined) catTotals[t.cat] += t.amount; });
+
+  const maxCat = Math.max(...Object.values(catTotals), 1);
+  const m = getMonth();
+  const monthLabel = m ? new Date(m + '-01').toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' }) : 'Tất cả';
+
+  container.innerHTML = `
+    <div class="page-header">
+      <div>
+        <div class="page-title"><em>Chi Tiêu</em> Tháng</div>
+        <div class="page-subtitle">// ${monthLabel} · ${data.length} giao dịch</div>
+      </div>
+      <button class="btn btn-primary" onclick="openAddModal()">+ Thêm mới</button>
+    </div>
+
+    <div class="total-banner">
+      <div>
+        <div class="label">Tổng chi tiêu</div>
+        <div class="amount">${fmt(total)}<span>tháng này</span></div>
+      </div>
+      <div style="text-align:right">
+        <div class="label">Trung bình / ngày</div>
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text-muted)">
+          ${data.length ? fmt(Math.round(total / new Date(m ? m+'-01':new Date()).getMonth() || 30)) : '—'}
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      ${CATEGORIES.slice(0,4).map(c => `
+        <div class="stat-card">
+          <div class="stat-label">${c.emoji} ${c.label}</div>
+          <div class="stat-amount" style="color:${c.color}">${fmt(catTotals[c.id])}</div>
+          <div class="stat-count">${data.filter(t=>t.cat===c.id).length} lần</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="cat-overview">
+      <div class="section-title">Phân bổ danh mục</div>
+      ${CATEGORIES.map(c => `
+        <div class="cat-row">
+          <div class="cat-name">
+            <div class="cat-dot" style="background:${c.color}"></div>
+            ${c.emoji} ${c.label}
+          </div>
+          <div class="cat-bar-wrap">
+            <div class="cat-bar" style="width:${(catTotals[c.id]/maxCat*100).toFixed(1)}%;background:${c.color}"></div>
+          </div>
+          <div class="cat-amount">${fmtFull(catTotals[c.id])}</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="content-grid">
+      <div class="transactions">
+        <div class="transactions-header">
+          <div class="section-title" style="margin:0;flex:1">Giao dịch gần đây</div>
+          <div class="filter-tabs" id="filterTabs">
+            <button class="filter-tab active" onclick="filterCat('all',this)">Tất cả</button>
+            ${CATEGORIES.map(c=>`<button class="filter-tab" onclick="filterCat('${c.id}',this)">${c.emoji}</button>`).join('')}
+          </div>
+        </div>
+        <div class="tx-list" id="txList">
+          ${renderTxList(data)}
+        </div>
+      </div>
+
+      <div class="add-form">
+        <div class="section-title">Quick Add</div>
+        <div class="form-group">
+          <label class="form-label">Danh mục</label>
+          <div class="cat-chips">${renderCatChipsInline()}</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mô tả</label>
+          <input class="form-input" id="qNote" placeholder="Ghi chú nhanh..." />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Số tiền</label>
+          <div class="amount-input-wrap">
+            <input class="form-input amount" id="qAmount" type="number" placeholder="0" />
+            <span class="currency">₫</span>
+          </div>
+          <div class="quick-amounts">
+            <div class="quick-amt" onclick="setQAmount(10000)">10K</div>
+            <div class="quick-amt" onclick="setQAmount(20000)">20K</div>
+            <div class="quick-amt" onclick="setQAmount(30000)">30K</div>
+            <div class="quick-amt" onclick="setQAmount(50000)">50K</div>
+            <div class="quick-amt" onclick="setQAmount(100000)">100K</div>
+            <div class="quick-amt" onclick="setQAmount(200000)">200K</div>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width:100%" onclick="quickAdd()">💾 Lưu hôm nay</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderCatChipsInline() {
+  return CATEGORIES.map(c => `
+    <div class="cat-chip ${c.id === selectedCat ? 'selected' : ''}"
+      style="${c.id === selectedCat ? `border-color:${c.color};background:${c.color}22` : ''}"
+      onclick="selectCatInline('${c.id}',this)">
+      ${c.emoji} ${c.label}
+    </div>
+  `).join('');
+}
+
+function selectCatInline(id, el) {
+  selectedCat = id;
+  document.querySelectorAll('.cat-chip').forEach(c => {
+    c.classList.remove('selected');
+    c.style.borderColor = '';
+    c.style.background = '';
+  });
+  const cat = getCat(id);
+  el.classList.add('selected');
+  el.style.borderColor = cat.color;
+  el.style.background = cat.color + '22';
+}
+
+function renderTxList(data) {
+  if (!data.length) return `<div class="empty-state"><div class="big">🪙</div><p>Chưa có giao dịch nào<br>Thêm chi tiêu đầu tiên đi!</p></div>`;
+  const sorted = [...data].sort((a,b) => new Date(b.date) - new Date(a.date));
+  return sorted.map(t => {
+    const cat = getCat(t.cat);
+    return `
+      <div class="tx-item">
+        <div class="tx-emoji" style="background:${cat.color}22">${cat.emoji}</div>
+        <div class="tx-info">
+          <div class="tx-title">${t.note || cat.label}</div>
+          <div class="tx-meta">${cat.label} · ${fmtDate(t.date)}</div>
+        </div>
+        <div class="tx-amount">-${fmt(t.amount)}</div>
+        <button class="tx-delete" onclick="deleteTransaction('${t.id}')">✕</button>
+      </div>
+    `;
+  }).join('');
+}
+
+let currentFilter = 'all';
+
+function filterCat(cat, el) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const data = monthData();
+  const filtered = cat === 'all' ? data : data.filter(t => t.cat === cat);
+  document.getElementById('txList').innerHTML = renderTxList(filtered);
+}
+
+function quickAdd() {
+  const note = document.getElementById('qNote').value.trim();
+  const amount = parseInt(document.getElementById('qAmount').value);
+  if (!amount || amount <= 0) { showToast('❌ Nhập số tiền hợp lệ!', 'error'); return; }
+
+  const today = new Date().toISOString().split('T')[0];
+  const tx = { id: Date.now().toString(), cat: selectedCat, note, amount, date: today };
+  const all = getStorage();
+  all.push(tx);
+  setStorage(all);
+  document.getElementById('qNote').value = '';
+  document.getElementById('qAmount').value = '';
+  showToast('✅ Đã thêm ' + fmt(amount), 'success');
+  render();
+}
+
+function setQAmount(v) {
+  const el = document.getElementById('qAmount');
+  if (el) el.value = v;
+}
+
+function deleteTransaction(id) {
+  const all = getStorage().filter(t => t.id !== id);
+  setStorage(all);
+  showToast('🗑️ Đã xoá giao dịch', 'success');
+  render();
+}
+
+function clearData() {
+  if (!confirm('Xoá toàn bộ dữ liệu? Hành động này không thể hoàn tác!')) return;
+  localStorage.removeItem('chi_tieu');
+  sessionStorage.removeItem('chi_tieu');
+  showToast('🗑️ Đã xoá tất cả', 'success');
+  render();
+}
+
+// ─── MODAL ───
+function openAddModal() {
+  renderCatChipsModal();
+  document.getElementById('txDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('addModal').classList.add('open');
+}
+
+function closeAddModal() {
+  document.getElementById('addModal').classList.remove('open');
+}
+
+function renderCatChipsModal() {
+  document.getElementById('catChips').innerHTML = CATEGORIES.map(c => `
+    <div class="cat-chip ${c.id === selectedCat ? 'selected' : ''}"
+      style="${c.id === selectedCat ? `border-color:${c.color};background:${c.color}22` : ''}"
+      onclick="selectCatModal('${c.id}',this)">
+      ${c.emoji} ${c.label}
+    </div>
+  `).join('');
+}
+
+function selectCatModal(id, el) {
+  selectedCat = id;
+  document.getElementById('catChips').querySelectorAll('.cat-chip').forEach(c => {
+    c.classList.remove('selected');
+    c.style.borderColor = '';
+    c.style.background = '';
+  });
+  const cat = getCat(id);
+  el.classList.add('selected');
+  el.style.borderColor = cat.color;
+  el.style.background = cat.color + '22';
+}
+
+function setAmount(v) {
+  document.getElementById('txAmount').value = v;
+}
+
+function addTransaction() {
+  const note = document.getElementById('txNote').value.trim();
+  const amount = parseInt(document.getElementById('txAmount').value);
+  const date = document.getElementById('txDate').value;
+
+  if (!amount || amount <= 0) { showToast('❌ Nhập số tiền hợp lệ!', 'error'); return; }
+  if (!date) { showToast('❌ Chọn ngày!', 'error'); return; }
+
+  const tx = { id: Date.now().toString(), cat: selectedCat, note, amount, date };
+  const all = getStorage();
+  all.push(tx);
+  setStorage(all);
+
+  document.getElementById('txNote').value = '';
+  document.getElementById('txAmount').value = '';
+  closeAddModal();
+  showToast('✅ Đã lưu ' + fmt(amount), 'success');
+  render();
+}
+
+// ─── TOAST ───
+let toastTimer;
+function showToast(msg, type='success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+function setPage(p) {
+  currentPage = p;
+  document.querySelectorAll('.nav-item').forEach((el, i) => {
+    el.classList.toggle('active', i === (p === 'dashboard' ? 0 : 1));
+  });
+  render();
+}
+
+// Close modal on overlay click
+document.getElementById('addModal').addEventListener('click', function(e) {
+  if (e.target === this) closeAddModal();
+});
+
+// Keyboard submit
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeAddModal();
+});
+
+// ─── INIT ───
+const mp = document.getElementById('monthPicker');
+const now = new Date();
+mp.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+render();
+
+// Demo data if empty
+if (getStorage().length === 0) {
+  const demo = [
+    { id:'1', cat:'meal', note:'Bún bò buổi sáng', amount:35000, date: now.toISOString().split('T')[0] },
+    { id:'2', cat:'grocery', note:'Mua rau + trứng chợ', amount:85000, date: now.toISOString().split('T')[0] },
+    { id:'3', cat:'fun', note:'Cafe với bạn', amount:120000, date: now.toISOString().split('T')[0] },
+    { id:'4', cat:'misc', note:'Xà phòng + giấy vệ sinh', amount:65000, date: now.toISOString().split('T')[0] },
+    { id:'5', cat:'transport', note:'Xăng xe tuần này', amount:100000, date: now.toISOString().split('T')[0] },
+    { id:'6', cat:'meal', note:'Cơm trưa văn phòng', amount:45000, date: now.toISOString().split('T')[0] },
+  ];
+  setStorage(demo);
+  render();
+}
+</script>
+</body>
+</html>
